@@ -9,11 +9,12 @@ imdb.images.data = gpuArray(imdb.images.data);
 
 ip2_idx = net.getVarIndex('ip2');
 corrent = 0;
+net.eval({'data', imdb.images.data(:,:,:, test)});
+net_out = squeeze(gather(net.vars(ip2_idx).value)); % 10 x 2000 single
 for i = 1:length(test)
     idx = test(i);
-    net.eval({'data', imdb.images.data(:,:,:, idx)});
-    [val prediction] = max(net.vars(ip2_idx).value);
-    if prediction == imdb.images.labels(idx)
+    [prob classes] = max(net_out(:, i));
+    if classes == imdb.images.labels(idx)
         corrent = corrent + 1;
     end
 end
